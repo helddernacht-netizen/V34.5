@@ -1,0 +1,148 @@
+{
+  "version": "V3.4 PAPER-TRADING + HEBEL LEITER",
+  "budget": 100000.0,
+  "equity_risk_unit_pct": 1.0,
+  "equity_risk_unit_usd": 1000.0,
+  "order_size_base": {
+    "pct": 3.0,
+    "leverage_default": 2,
+    "position_pct": 6.0,
+    "position_usd": 6000.0,
+    "description": "3% * 2x = 6% = 6000 USD Standard"
+  },
+  "max_positions": 5,
+  "max_exposure_pct": 30.0,
+  "max_exposure_usd": 30000.0,
+  "equity_safe": {
+    "max_dd_per_hold_pct": -1.5,
+    "max_dd_per_hold_usd": -1500.0,
+    "hard_stop_enabled": true,
+    "note": "Auf 100k Budget = -1500 USD Hard Stop pro Hold"
+  },
+  "fees": {
+    "taker_fee_pct": 0.04,
+    "slippage_pct": 0.02,
+    "be_extra_pct": 0.1,
+    "description": "Fee 0.04% + Slippage 0.02% + BE Entry+0.1% Fee"
+  },
+  "auto_sell_stages": {
+    "stage_1_be_protection": {
+      "trigger_pnl_pct_default": 1.5,
+      "trigger_pnl_pct_leverage_ge_3": 1.0,
+      "move_sl_to": "Entry + 0.1% Fee",
+      "description": "Ab hier kein Loss mehr möglich, nur noch Hold"
+    },
+    "stage_2_hold_respekt": {
+      "KURZ": {
+        "hold_target": "2-4h",
+        "min_hold_hours": 2,
+        "time_stop_hours_base": 4,
+        "never_sell_under_hours": 2,
+        "early_exit_only_if": "MoneyFlow dreht auf Risk-On + Vol +40% bei Binance/Coinbase"
+      },
+      "MITTEL": {
+        "hold_target": "12-24h",
+        "min_hold_hours": 4,
+        "time_stop_hours_base": 24,
+        "never_sell_under_hours": 4,
+        "note": "HYPE Beispiel - WICHTIGSTER MODUS - Unter 4h NIE verkaufen auch bei -0.7%",
+        "evaluation_every_hours": 4,
+        "evaluation_logic": "Check Bed1 Trend noch fallend? + Bed4 MoneyFlow noch Risk-Off? JA=HOLD, NEIN=50% Teilverkauf Rest BE",
+        "hard_close_at": -1.5
+      },
+      "LANG": {
+        "hold_target": "3-7d",
+        "min_hold_hours": 12,
+        "time_stop_hours_base": 168,
+        "never_sell_under_hours": 12,
+        "evaluation_every_hours": 12,
+        "hold_at_minus_1": "NICHT verkaufen bei -1.0%, erst -1.5% Hard",
+        "hard_close_at": -1.5
+      }
+    },
+    "stage_3_hard_equity_safe": {
+      "max_dd_2x_3x": -1.5,
+      "max_dd_4x": -1.0,
+      "action": "SOFORT 100% Market Close, egal welcher Modus, log MAX_DD_HOLD_HIT"
+    },
+    "stage_4_smart_profit": {
+      "rebound_signal": {
+        "rsi_1h_gt": 65,
+        "vol_spike_gt_pct": 50,
+        "bb_expansion": "oben",
+        "action": "Close 75%, Rest Trailing BE+0.5%"
+      },
+      "no_signal": "TimeStop Close nach Formel Basis/(Leverage/2)"
+    }
+  },
+  "hebel_leiter": {
+    "principle": "Hebel ist Zeit-Hebel, nicht nur Size-Hebel. Höherer Hebel = kürzere Hold Zeit.",
+    "2x_standard": {
+      "name": "Brot und Butter",
+      "when": "Jeder Coin der Bed1 + Bed4 schafft, Score 7-8/10",
+      "position_pct": 6.0,
+      "position_usd": 6000.0,
+      "hold": "Mittel 12-24h oder Lang 3-7d möglich",
+      "be_at": 1.5,
+      "leverage": 2
+    },
+    "3x_high_conviction": {
+      "name": "High Conviction - Sehr gute Coins",
+      "when": [
+        "Bed1 perfekt: 180d Sweet -15 bis -25% + 30d zappelt + 24h fällt",
+        "Bed4 perfekt: MoneyFlow Risk-Off + Vol -20% überall + Funding negativ",
+        "Score 9/10 + MoneyFlow Risk-Off = Triple Check",
+        "Beispiel HYPE -18% ATH + überall Vol bricht ein"
+      ],
+      "position_pct": 9.0,
+      "position_usd": 9000.0,
+      "hold_shortened": "Mittel statt Lang, max 12-16h statt 24h",
+      "be_faster": "schon bei +1.0% statt +1.5%",
+      "formula_max_hold": "Basis Zeit / (Hebel/2) => 24h /1.5 = 16h",
+      "leverage": 3,
+      "effect": {
+        "win_1_2_pct": "+108 USD statt +72 USD bei 2x",
+        "loss_0_7_pct": "-63 USD statt -42 USD = noch im Safe"
+      }
+    },
+    "4x_treasure": {
+      "name": "Treasure Mode - Nur absolute Perlen, 1-2x pro Woche",
+      "when": [
+        "Alles grün + MoneyFlow USDT Dom +2% = Geld flieht aus Alts",
+        "Funding -0.05% = Alle shorten schon = bald Squeeze nach unten = perfekt",
+        "Score 10/10"
+      ],
+      "position_pct": 12.0,
+      "position_usd": 12000.0,
+      "hold_only": "Kurz-Hold 2-4h max! Kein Mittel/Lang!",
+      "equity_safe_tighter": "-1.0% statt -1.5% weil 4x drückt",
+      "partial_sell": "50% Teilverkauf schon bei +1.0%",
+      "max_exposure": "2 Trades 4x = 24% = Limit, dann kein 3. Trade mehr",
+      "leverage": 4
+    },
+    "verbot": "Lang-Hold 3-7d NIEMALS über 2x! Zeit*Hebel = Risiko, Funding frisst dich",
+    "time_evaluation": {
+      "before_entry": {
+        "score_7_8": "2x + Mittel 12-24h",
+        "score_9_risk_off": "3x + Kurz/Mittel 4-12h",
+        "score_10_usdt_up_funding_neg": "4x + Kurz 2-4h"
+      },
+      "during_hold_every_4h": {
+        "leverage_3x_plus_pnl_minus_0_8_after_2h": "Früher raus",
+        "leverage_2x_pnl_minus_0_8_after_4h": "Weiter halten"
+      }
+    },
+    "paper_distribution_test": {
+      "70_pct_2x": "Training",
+      "25_pct_3x": "High Conviction",
+      "5_pct_4x": "Treasure",
+      "test_question": "Bringt 3x wirklich +50% PnL oder nur +50% Stress?"
+    }
+  },
+  "example_hype_100k": {
+    "trade_6000_position_minus_0_7_pct": "-42 USD auf Position = -0.042% auf 100k => WEIT unter -1.5% => HALTEN!",
+    "old_SL_minus_0_35": "Panik Sell nach 30min",
+    "new_hold_minus_0_7_4h": "halten wir 4h easy aus, bewerten erst dann",
+    "2_trades_6000_12k_exposure": "12%, beide -1.5% = -180 USD = -0.18% auf 100k => Safe"
+  }
+}

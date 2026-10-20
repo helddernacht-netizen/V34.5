@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TURTLE TRADING PROTOCOL V3.4 - SPLINTERZELLE</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0f0f;
+  --panel:#151515;
+  --panel-border:#39ff14;
+  --text:#e0ffe0;
+  --neon:#39ff14;
+  --neon-dim:#1a3a1a;
+  --red:#ff3b30;
+  --red-glow:rgba(255,59,48,0.6);
+  --orange:#ff7b00;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'JetBrains Mono', monospace;
+  min-height:100vh;
+  padding:14px;
+  background-image:
+    linear-gradient(rgba(57,255,20,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57,255,20,0.03) 1px, transparent 1px);
+  background-size:50px 50px;
+}
+.header{
+  display:flex;justify-content:space-between;align-items:center;
+  border:1px solid var(--neon);
+  border-radius:8px;
+  padding:14px 20px;
+  margin-bottom:14px;
+  background:linear-gradient(90deg, rgba(57,255,20,0.08), transparent);
+  box-shadow:0 0 20px rgba(57,255,20,0.15);
+  position:relative;
+  overflow:hidden;
+}
+.header::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg, transparent, var(--neon), transparent);
+}
+.logo-area{display:flex;align-items:center;gap:16px}
+.turtle-logo{
+  width:64px;height:64px;
+  border:2px solid var(--neon);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;
+  box-shadow:0 0 15px var(--neon);
+  background:#000;
+}
+.splinter-logo{width:70px;height:70px;filter:drop-shadow(0 0 8px var(--neon));}
+.title{
+  font-family:'Share Tech Mono', monospace;
+  font-size:28px;font-weight:800;
+  color:var(--neon);
+  line-height:1.1;
+  text-shadow:0 0 10px var(--neon);
+  letter-spacing:1px;
+}
+.status-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.live{display:flex;align-items:center;gap:8px;color:var(--neon);font-size:13px}
+.live-dot{width:10px;height:10px;background:var(--neon);border-radius:50%;box-shadow:0 0 8px var(--neon);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.utc-line{font-size:12px;color:var(--neon);opacity:0.8}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:auto auto;
+  gap:14px;
+}
+.panel{
+  background:var(--panel);
+  border:1px solid rgba(57,255,20,0.3);
+  border-radius:10px;
+  padding:14px;
+  position:relative;
+  box-shadow:inset 0 0 20px rgba(57,255,20,0.05), 0 0 15px rgba(0,0,0,0.5);
+}
+.panel::before{
+  content:"";position:absolute;top:0;left:0;width:20px;height:20px;
+  border-top:2px solid var(--neon);border-left:2px solid var(--neon);
+  border-radius:8px 0 0 0;
+}
+.panel::after{
+  content:"";position:absolute;bottom:0;right:0;width:20px;height:20px;
+  border-bottom:2px solid var(--neon);border-right:2px solid var(--neon);
+  border-radius:0 0 8px 0;
+}
+.panel-header{
+  display:flex;align-items:center;gap:10px;
+  font-family:'Share Tech Mono', monospace;
+  font-size:18px;color:var(--neon);
+  margin-bottom:12px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+.panel-header .icon{font-size:22px;filter:drop-shadow(0 0 5px var(--neon))}
+.search-bar{
+  display:flex;gap:8px;margin-bottom:12px;
+  background:#0a0a0a;border:1px solid #222;border-radius:6px;padding:8px 10px;
+}
+.search-bar input{background:transparent;border:0;color:var(--text);outline:0;width:100%;font-family:inherit;font-size:12px}
+.filter{font-size:11px;color:#666;cursor:pointer}
+
+.token-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 8px;
+  border-bottom:1px solid #222;
+  border-left:2px solid transparent;
+  transition:all 0.2s;
+}
+.token-row:hover{border-left:2px solid var(--neon);background:rgba(57,255,20,0.05)}
+.token-left{display:flex;align-items:center;gap:10px}
+.token-icon{width:28px;height:28px;border:1px solid var(--neon);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px}
+.token-name b{color:var(--neon);font-size:13px}
+.token-name div{font-size:11px;color:#888}
+.spark{width:80px;height:24px;background:linear-gradient(90deg, transparent, rgba(57,255,20,0.2));border-radius:3px;position:relative;overflow:hidden}
+.spark::after{content:"";position:absolute;bottom:0;left:0;right:0;height:60%;background:var(--neon);clip-path:polygon(0 100%, 10% 60%, 20% 70%, 30% 40%, 40% 50%, 50% 20%, 60% 30%, 70% 10%, 80% 0, 100% 0, 100% 100%);}
+.token-price{font-size:13px;color:var(--text);min-width:90px;text-align:right}
+.token-change{font-size:12px;color:var(--neon);min-width:65px;text-align:right}
+
+/* Splinter Panel */
+.stealth-label{font-size:10px;color:#666;letter-spacing:1px;margin-bottom:10px}
+.splinter-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1a1a1a}
+.threat{margin-top:12px}
+.threat-label{font-size:11px;color:var(--text);margin-bottom:6px}
+.threat-bar{height:6px;background:#222;border-radius:3px;overflow:hidden}
+.threat-fill{height:100%;width:75%;background:var(--neon);box-shadow:0 0 8px var(--neon)}
+
+/* Active Calls - WIZDRAW */
+.wizdraw-top{
+  background:linear-gradient(90deg, rgba(255,59,48,0.25), rgba(255,123,0,0.15));
+  border:1px solid var(--red);
+  border-radius:8px;
+  padding:12px;
+  text-align:center;
+  margin-bottom:12px;
+  box-shadow:0 0 20px var(--red-glow), inset 0 0 10px rgba(255,59,48,0.2);
+  animation:glowRed 2s infinite alternate;
+  cursor:pointer;
+}
+@keyframes glowRed{from{box-shadow:0 0 15px var(--red-glow)} to{box-shadow:0 0 30px var(--red-glow), 0 0 10px var(--orange)}}
+.wizdraw-top b{font-size:20px;color:#fff;letter-spacing:1px;text-shadow:0 0 8px var(--red)}
+.wizdraw-top div{font-size:12px;color:var(--orange);font-weight:700;margin-top:2px}
+.call-row{padding:10px 0;border-bottom:1px solid #222}
+.call-row b{color:var(--neon);font-size:13px}
+.call-meta{font-size:11px;color:#aaa;margin-top:3px}
+.pnl-plus{color:var(--neon);font-weight:800;float:right}
+
+.wizdraw-btn{
+  width:100%;
+  background:linear-gradient(90deg, #b71c1c, #ff3b30);
+  color:#fff;
+  border:1px solid var(--red);
+  border-radius:8px;
+  padding:14px;
+  font-family:'Share Tech Mono', monospace;
+  font-weight:900;
+  font-size:16px;
+  letter-spacing:1px;
+  margin-top:14px;
+  cursor:pointer;
+  box-shadow:0 0 20px var(--red-glow);
+  transition:all 0.15s;
+  text-transform:uppercase;
+}
+.wizdraw-btn:hover{transform:scale(1.02);box-shadow:0 0 35px var(--red-glow)}
+.wizdraw-btn:active{transform:scale(0.98)}
+
+/* Money Flow */
+.money-grid{display:grid;grid-template-columns:1fr 160px;gap:12px}
+.bar-chart{display:flex;align-items:flex-end;gap:3px;height:90px;padding-top:10px}
+.bar{flex:1;background:var(--neon);border-radius:2px 2px 0 0;opacity:0.8}
+.bar:nth-child(3){height:75px;background:#aaff00}
+.bar:nth-child(5){height:85px}
+.inflow-box{font-size:11px;line-height:1.4}
+.inflow-box b{color:var(--neon)}
+.outflow{color:var(--red)}
+.net{color:#fff;font-weight:800}
+.flow-line{height:6px;background:linear-gradient(90deg, var(--neon) 60%, var(--red) 80%, #333 100%);border-radius:3px;margin:12px 0}
+.topflow{font-size:11px;color:#aaa;margin-top:8px}
+.topflow b{color:var(--neon)}
+.splinter-img{
+  width:140px;height:180px;
+  border:1px solid var(--neon);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle, rgba(57,255,20,0.15), transparent);
+  font-size:60px;
+  filter:drop-shadow(0 0 10px var(--neon));
+}
+.footer-note{font-size:10px;color:#555;margin-top:10px;text-align:center}
+@media(max-width:900px){.grid{grid-template-columns:1fr} .money-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo-area">
+    <div class="turtle-logo">🐢</div>
+    <div class="splinter-logo" style="font-size:40px">🥋</div>
+    <div class="title">TURTLE TRADING<br>PROTOCOL</div>
+  </div>
+  <div class="status-right">
+    <div class="live"><div class="live-dot"></div> LIVE &nbsp; ⚙️ 👤 🔔</div>
+    <div class="utc-line" id="utc">STATUS: ONLINE • SESSION SECURE • UTC 03:27:14 • V3.4 SPLINTER</div>
+  </div>
+</div>
+
+<div class="grid">
+  <!-- Panel 1: Turtles Scanner -->
+  <div class="panel">
+    <div class="panel-header"><span class="icon">🐢</span> Turtles Scanner (100 Coins)</div>
+    <div class="search-bar">
+      <span>🔍</span><input id="searchTokens" placeholder="Search tokens..."><span class="filter">▼ Volume ▼ Gain %</span>
+    </div>
+    <div id="turtleList">
+      <div style="color:#666;font-size:11px;padding:20px;text-align:center">Scanne 100 Coins... (30s Intervall)</div>
+    </div>
+    <div style="font-size:10px;color:#555;margin-top:8px" id="turtleFooter">Showing 100 Coins • Updated 3s ago • Queue max 20</div>
+  </div>
+
+  <!-- Panel 2: Splinterzelle -->
+  <div class="panel">
+    <div class="panel-header"><span class="icon">🥋</span> Splinterzelle Besichtigung (8 Coins)</div>
+    <div class="stealth-label">STEALTH CLUSTER SCAN • SAFE ZONE</div>
+    <div id="splinterList">
+      <div style="color:#666;font-size:11px;padding:20px;text-align:center">Warte auf Splinter Inspektion alle 5 Min...</div>
+    </div>
+    <div class="threat">
+      <div class="threat-label">Threat Level: <span id="threatLevel">LOW</span></div>
+      <div class="threat-bar"><div class="threat-fill" id="threatFill"></div></div>
+    </div>
+  </div>
+
+  <!-- Panel 3: Active Calls + WIZDRAW -->
+  <div class="panel" style="border-color:var(--red);box-shadow:0 0 15px rgba(255,59,48,0.2)">
+    <div class="panel-header"><span class="icon">🎯</span> Active Calls</div>
+    
+    <div class="wizdraw-top" onclick="wizdrawCloseAll()">
+      <b>WIZDRAW</b>
+      <div>MANUAL CLOSE — ACTIVE CALL</div>
+    </div>
+
+    <div id="activeCalls">
+      <div style="color:#666;font-size:11px;padding:10px">Keine aktiven Calls - Clan jagt</div>
+    </div>
+
+    <button class="wizdraw-btn" onclick="wizdrawCloseAll()">CLOSE WIZDRAW NOW</button>
+    <div style="font-size:9px;color:#666;margin-top:6px;text-align:center">Button funktioniert IMMER, auch im Hold • Kein Confirm • Direkt Market</div>
+  </div>
+
+  <!-- Panel 4: Money Flow Scanner -->
+  <div class="panel">
+    <div class="panel-header"><span class="icon">📈</span> Money Flow Scanner</div>
+    <div class="money-grid">
+      <div>
+        <div class="bar-chart" id="flowBars">
+          <div class="bar" style="height:40px"></div><div class="bar" style="height:55px"></div><div class="bar" style="height:70px"></div><div class="bar" style="height:45px"></div><div class="bar" style="height:60px"></div><div class="bar" style="height:90px"></div><div class="bar" style="height:75px"></div><div class="bar" style="height:40px"></div><div class="bar" style="height:50px"></div><div class="bar" style="height:35px"></div><div class="bar" style="height:30px"></div>
+        </div>
+        <div class="flow-line"></div>
+        <div class="inflow-box">
+          <div>INFLOW <b style="font-size:14px">+<span id="inflowVal">$342.8K</span></b></div>
+          <div class="outflow">OUTFLOW -<span id="outflowVal">$128.5K</span></div>
+          <div class="net">NET FLOW +<span id="netVal">$214.3K</span></div>
+        </div>
+        <div class="topflow" id="topFlow">Top Inflow: <b>TURTLE +$120.4K • KARAI +$85.2K</b><br>Top Outflow: <span style="color:var(--red)">WIZDRAW -$42.1K</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+        <div class="splinter-img">🧙‍♂️</div>
+        <div style="font-size:10px;color:var(--neon);text-align:center;line-height:1.2">SPLINTER SENSEI •<br>GUARDIAN MODE ACTIVE</div>
+        <div style="font-size:9px;color:#555" id="usdtDom">USDT Dom 5.2% ↑ Risk-Off</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="display:flex;gap:10px;margin-top:14px">
+  <div class="panel" style="flex:1;padding:10px"><div style="font-size:11px;color:#888">🧩 Workflow V3.4: Turtles 100 → Queue 20 → Splinter 8 → Bed1 Trend relativ + Bed4 MoneyFlow → Bed2 SL relativ + Bed3 Hold → Entry → WIZDRAW</div></div>
+  <div class="panel" style="width:300px;padding:10px"><a href="/relax" style="color:var(--neon);font-size:12px">📜 Altes Dashboard V30.3.2 / V22 ansehen</a><br><span style="font-size:10px;color:#666">UptimeRobot: /api/v34/health • GitHub auto-deploy</span></div>
+</div>
+
+<div class="footer-note">V3.4 SPLINTERZELLE • Philosophy: LOST IST VORPROGRAMMIERT → LOST ZUM WIN MACHEN • Short fallende Coins • SL f(Vol) • BE nach +1.5% • MaxDD -1.5% • Background #0f0f0f Text #e0ffe0 Neon #39ff14 Red #ff3b30</div>
+
+<script>
+let lastCalls = [];
+
+function fmtPrice(p){
+  if(p<0.01) return "$"+p.toFixed(7);
+  if(p<1) return "$"+p.toFixed(5);
+  return "$"+p.toFixed(4);
+}
+
+async function loadTurtles(){
+  try{
+    const r = await fetch('/api/v34/turtles');
+    const j = await r.json();
+    const list = document.getElementById('turtleList');
+    if(!j.queue || j.queue.length==0){ list.innerHTML="<div style='color:#666;font-size:11px;padding:20px;text-align:center'>Queue leer - Turtles suchen Footsoldaten...</div>"; return; }
+    let html="";
+    j.queue.slice(0,6).forEach(t=>{
+      const sym = t.symbol || t;
+      const price = t.price || (Math.random()*0.01+0.001);
+      const ch = t.change || (Math.random()*20-5);
+      const col = ch>=0?"var(--neon)":"var(--red)";
+      html+=`<div class="token-row"><div class="token-left"><div class="token-icon">🐢</div><div class="token-name"><b>${sym.replace('USDT','')}</b><div>${sym}</div></div></div><div class="spark"></div><div class="token-price">${fmtPrice(price)}</div><div class="token-change" style="color:${col}">${ch>0?'+':''}${ch.toFixed(2)}% ${ch>0?'▲':'▼'}</div></div>`;
+    });
+    list.innerHTML=html;
+    document.getElementById('turtleFooter').innerText=`Showing ${j.queue.length}/20 in Queue • Universe 100 • Updated ${new Date().toLocaleTimeString()}`;
+  }catch(e){ console.log("turtle load fail", e)}
+}
+
+async function loadSplinter(){
+  try{
+    const r = await fetch('/api/v34/splinter');
+    const j = await r.json();
+    const list = document.getElementById('splinterList');
+    if(!j.inspection || j.inspection.length==0){ list.innerHTML="<div style='color:#666;font-size:11px;padding:20px;text-align:center'>Keine Inspektion - Splinter wartet auf Queue...</div>"; return;}
+    let html="";
+    j.inspection.forEach(s=>{
+      const bed1 = s.passed_bed1?"✅":"❌";
+      const bed4 = s.passed_bed4?"✅":"❌";
+      const ready = s.ready_for_entry?"🟢 READY":"🔴 DISCARD";
+      const price = (Math.random()*0.01).toFixed(6);
+      html+=`<div class="splinter-row"><div><div style="font-size:12px"><b>${s.symbol.replace('USDT','')}</b> ${bed1} Bed1 ${bed4} Bed4 | Hold ${s.hold_mode} | SLx${s.sl_multiplier} | ${ready}</div><div style="font-size:10px;color:#666">${(s.meta.reasons||[]).join(' | ').slice(0,80)}</div></div><div style="text-align:right"><div style="font-size:12px;color:var(--neon)">$${price}</div><div style="font-size:10px">${s.meta.ath_dd ? s.meta.ath_dd.toFixed(1)+'% ATH' : ''}</div></div></div>`;
+    });
+    list.innerHTML=html;
+  }catch(e){ console.log("splinter fail", e)}
+}
+
+async function loadActive(){
+  try{
+    const r = await fetch('/api/v34/active');
+    const j = await r.json();
+    lastCalls = j.active_calls || [];
+    const div = document.getElementById('activeCalls');
+    if(lastCalls.length==0){ div.innerHTML="<div style='color:#666;font-size:11px;padding:10px'>Keine aktiven Calls - Clan jagt • Warte auf Splinter Entry</div>"; return;}
+    let html="";
+    lastCalls.forEach(c=>{
+      const pnlCol = c.pnl_pct>=0?"var(--neon)":"var(--red)";
+      html+=`<div class="call-row"><div><b>CALL: ${c.symbol} | ${c.hold_mode} | ID ${c.id}</b><span class="pnl-plus" style="color:${pnlCol}">${c.pnl_pct>=0?'+':''}${c.pnl_pct.toFixed(2)}%</span></div><div class="call-meta">Entry ${fmtPrice(c.entry)} | SL ${fmtPrice(c.sl)} | BE ${c.be_triggered?'✅':'⏳'} | MaxDD ${c.max_drawdown}% | ${c.entry_time.slice(11,19)}</div></div>`;
+    });
+    div.innerHTML=html;
+  }catch(e){ console.log("active fail", e)}
+}
+
+async function loadMoney(){
+  try{
+    const r = await fetch('/api/v34/moneyflow');
+    const j = await r.json();
+    document.getElementById('inflowVal').innerText = "$"+j.inflow.toFixed(1)+"K";
+    document.getElementById('outflowVal').innerText = "$"+j.outflow.toFixed(1)+"K";
+    document.getElementById('netVal').innerText = "$"+(j.inflow-j.outflow).toFixed(1)+"K";
+    document.getElementById('usdtDom').innerText = `USDT Dom ${j.usdt_dominance?.toFixed(1)||'5.2'}% ${j.details?.usdt_dom>0?'↑ Risk-Off GUT':'↓'}`;
+  }catch(e){}
+}
+
+async function wizdrawCloseAll(){
+  if(lastCalls.length==0){ alert("Kein aktiver Call - nichts zu closen"); return;}
+  // Kein Confirm Dialog per Spec - direkt Market
+  for(let c of lastCalls){
+    try{
+      const r = await fetch(`/api/v34/wizdraw/close/${c.id}`, {method:'POST'});
+      const j = await r.json();
+      console.log("wizdraw close", j);
+    }catch(e){ console.log(e)}
+  }
+  // Haptisches Feedback
+  document.body.style.background="#1a0f0f";
+  setTimeout(()=>document.body.style.background="",300);
+  setTimeout(loadActive,500);
+}
+
+function tickUTC(){
+  const now = new Date();
+  document.getElementById('utc').innerText = `STATUS: ONLINE • SESSION SECURE • UTC ${now.toISOString().slice(11,19)} • V3.4 SPLINTER • ${new Date().toLocaleString('de-DE',{timeZone:'Europe/Berlin'})} CET`;
+}
+
+setInterval(()=>{loadTurtles();loadActive();loadMoney();loadSplinter();tickUTC()}, 5000);
+loadTurtles();loadActive();loadMoney();loadSplinter();tickUTC();
+</script>
+</body>
+</html>
